@@ -1,16 +1,28 @@
 import { Form, Outlet, Link, NavLink, useNavigation } from "react-router";
 import type { Route } from "./+types/sidebar";
 import { getContacts } from "~/data";
+import { useEffect, useRef } from "react";
 
-export async function loader() {
-  const contacts = await getContacts();
-  return { contacts };
+export async function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  const q = url.searchParams.get("q");
+
+  const contacts = await getContacts(q);
+  return { contacts, query: q };
 }
 
 export default function SidebarLayout({ loaderData }: Route.ComponentProps) {
-  const { contacts } = loaderData;
+  const { contacts, query } = loaderData;
 
   const navigation = useNavigation();
+
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (searchRef.current) {
+      searchRef.current.value = query || "";
+    }
+  }, [query]);
 
   return (
     <div className="flex h-screen w-screen">
@@ -24,6 +36,8 @@ export default function SidebarLayout({ loaderData }: Route.ComponentProps) {
               placeholder="Search"
               type="search"
               className="p-2 rounded-md shadow-md bg-white"
+              ref={searchRef}
+              value={query || ""}
             />
           </Form>
 
