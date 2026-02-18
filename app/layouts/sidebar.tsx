@@ -2,7 +2,7 @@ import { Form, Outlet, Link } from "react-router";
 import type { Route } from "./+types/sidebar";
 import { getContacts } from "~/data";
 
-export async function clientLoader() {
+export async function loader() {
   const contacts = await getContacts();
   return { contacts };
 }
@@ -58,7 +58,7 @@ export default function SidebarLayout({ loaderData }: Route.ComponentProps) {
         </h1>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex flex-1 overflow-hidden items-start justify-center w-full">
         <Outlet />
       </div>
     </div>
