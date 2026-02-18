@@ -10,6 +10,9 @@ export default [
   route("about", "routes/about.tsx"),
   layout("layouts/sidebar.tsx", [
     index("routes/home.tsx"),
-    route("contacts/:contactId", "routes/contacts.tsx"),
+    ...prefix("contacts/:contactId", [
+      index("routes/contacts.tsx"),
+      route("edit", "routes/edit-contact.tsx"),
+    ]),
   ]),
 ] satisfies RouteConfig;
