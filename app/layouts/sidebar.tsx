@@ -1,4 +1,4 @@
-import { Form, Outlet, Link } from "react-router";
+import { Form, Outlet, Link, NavLink, useNavigation } from "react-router";
 import type { Route } from "./+types/sidebar";
 import { getContacts } from "~/data";
 
@@ -9,6 +9,8 @@ export async function loader() {
 
 export default function SidebarLayout({ loaderData }: Route.ComponentProps) {
   const { contacts } = loaderData;
+
+  const navigation = useNavigation();
 
   return (
     <div className="flex h-screen w-screen">
@@ -41,13 +43,15 @@ export default function SidebarLayout({ loaderData }: Route.ComponentProps) {
               </p>
             ) : (
               contacts.map((contact) => (
-                <li
-                  key={contact.id}
-                  className="px-1 py-2 rounded-md hover:bg-gray-200"
-                >
-                  <Link to={`/contacts/${contact.id}`}>
+                <li key={contact.id}>
+                  <NavLink
+                    className={({ isActive, isPending }) => {
+                      return `block w-full px-1 py-2 rounded-md hover:bg-gray-200 ${isActive ? "bg-blue-500" : isPending ? "bg-gray-200" : ""}`;
+                    }}
+                    to={`/contacts/${contact.id}`}
+                  >
                     {contact.first} {contact.last}
-                  </Link>
+                  </NavLink>
                 </li>
               ))
             )}
@@ -58,7 +62,9 @@ export default function SidebarLayout({ loaderData }: Route.ComponentProps) {
         </h1>
       </div>
 
-      <div className="flex flex-1 overflow-hidden items-start justify-center w-full">
+      <div
+        className={`flex flex-1 overflow-hidden items-start justify-center w-full ${navigation.state === "loading" ? "opacity-50" : ""}`}
+      >
         <Outlet />
       </div>
     </div>

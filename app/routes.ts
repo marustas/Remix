@@ -13,6 +13,7 @@ export default [
     ...prefix("contacts/:contactId", [
       index("routes/contacts.tsx"),
       route("edit", "routes/edit-contact.tsx"),
+      route("destroy", "routes/destroy-contact.tsx"),
     ]),
   ]),
 ] satisfies RouteConfig;

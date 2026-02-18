@@ -1,4 +1,4 @@
-import { Form, redirect } from "react-router";
+import { Form, redirect, useNavigate } from "react-router";
 
 import { getContact, updateContact } from "../data";
 import type { Route } from "./+types/edit-contact";
@@ -21,6 +21,8 @@ export async function loader({ params }: Route.LoaderArgs) {
 
 export default function EditContact({ loaderData }: Route.ComponentProps) {
   const { contact } = loaderData;
+
+  const navigate = useNavigate();
 
   return (
     <Form
@@ -88,6 +90,7 @@ export default function EditContact({ loaderData }: Route.ComponentProps) {
         <button
           className="rounded-md shadow-md bg-white p-2 hover:cursor-pointer"
           type="button"
+          onClick={() => navigate(-1)}
         >
           Cancel
         </button>
