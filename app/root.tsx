@@ -1,14 +1,9 @@
 import {
-  Form,
   isRouteErrorResponse,
-  Link,
   Links,
-  Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
-  type LoaderFunction,
 } from "react-router";
 
 import type { Route } from "./+types/root";
@@ -28,59 +23,15 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-export async function clientLoader() {
-  const contacts = await getContacts();
-  return { contacts };
+export default function App() {
+  return <Outlet />;
 }
 
-export default function App({ loaderData }: Route.ComponentProps) {
-  const { contacts } = loaderData;
-
+export function HydrateFallback() {
   return (
-    <div className="flex h-screen w-screen">
-      <div className="flex flex-col bg-gray-100 border-r border-gray-300 w-80">
-        <div className="flex justify-between gap-1 border-b border-gray-300 p-4 items-center">
-          <Form id="search-form" role="search">
-            <input
-              aria-label="Search contacts"
-              id="q"
-              name="q"
-              placeholder="Search"
-              type="search"
-              className="p-2 rounded-md shadow-md"
-            />
-          </Form>
-
-          <Form
-            method="post"
-            className="p-2 rounded-md shadow-md text-blue-400"
-          >
-            <button type="submit">New</button>
-          </Form>
-        </div>
-
-        <nav className="flex-1 overflow-y-auto">
-          <ul className="py-4">
-            {contacts?.length === 0 ? (
-              <p>
-                <i>No contacts</i>
-              </p>
-            ) : (
-              contacts.map((contact) => (
-                <li key={contact.id} className="p-4">
-                  <Link to={`/contacts/${contact.id}`}>
-                    {contact.first} {contact.last}
-                  </Link>
-                </li>
-              ))
-            )}
-          </ul>
-        </nav>
-      </div>
-
-      <div className="flex-1 overflow-y-auto">
-        <Outlet />
-      </div>
+    <div id="loading-splash">
+      <div id="loading-splash-spinner" />
+      <p>Loading, please wait...</p>
     </div>
   );
 }
