@@ -15,6 +15,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const q = url.searchParams.get("q");
 
   const contacts = getContacts(q);
+
   return { contacts, query: q };
 }
 
@@ -48,35 +49,39 @@ export default function SidebarLayout({ loaderData }: Route.ComponentProps) {
             />
           </Form>
 
-          <Form
-            method="post"
-            className="p-2 rounded-md shadow-md bg-white text-blue-400"
-          >
-            <button type="submit">New</button>
+          <Form method="post">
+            <button
+              className="p-2 rounded-md shadow-md bg-white text-blue-400 hover:cursor-pointer hover:bg-gray-200"
+              type="submit"
+            >
+              New
+            </button>
           </Form>
         </div>
 
         <nav className="flex-1 overflow-y-auto">
-          <Suspense fallback={<p>Loading contacts...</p>}>
-            <Await
-              resolve={contactsPromise}
-              errorElement={<p>Error loading contacts</p>}
-              children={(contacts) =>
-                contacts.map((contact) => (
-                  <li key={contact.id}>
-                    <NavLink
-                      className={({ isActive, isPending }) => {
-                        return `block w-full px-1 py-2 rounded-md hover:bg-gray-200 ${isActive ? "bg-blue-500" : isPending ? "bg-gray-200" : ""}`;
-                      }}
-                      to={`/contacts/${contact.id}`}
-                    >
-                      {contact.first} {contact.last}
-                    </NavLink>
-                  </li>
-                ))
-              }
-            />
-          </Suspense>
+          <ul className="p-4">
+            <Suspense fallback={<p>Loading contacts...</p>}>
+              <Await
+                resolve={contactsPromise}
+                errorElement={<p>Error loading contacts</p>}
+                children={(contacts) =>
+                  contacts.map((contact) => (
+                    <li key={contact.id}>
+                      <NavLink
+                        className={({ isActive, isPending }) => {
+                          return `block w-full px-1 py-2 rounded-md hover:bg-gray-200 ${isActive ? "bg-blue-500" : isPending ? "bg-gray-200" : ""}`;
+                        }}
+                        to={`/contacts/${contact.id}`}
+                      >
+                        {contact.first} {contact.last}
+                      </NavLink>
+                    </li>
+                  ))
+                }
+              />
+            </Suspense>
+          </ul>
         </nav>
         <h1>
           <Link to="about">About</Link>

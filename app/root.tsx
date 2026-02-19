@@ -3,12 +3,20 @@ import {
   Links,
   Meta,
   Outlet,
+  redirect,
   Scripts,
   ScrollRestoration,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { createEmptyContact } from "./data";
+
+export async function action() {
+  const contact = await createEmptyContact();
+
+  return redirect(`/contacts/${contact.id}/edit`);
+}
 
 export const meta: Route.MetaFunction = () => {
   return [
