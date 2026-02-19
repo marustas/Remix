@@ -1,18 +1,25 @@
-import { Form, Outlet, Link, NavLink, useNavigation } from "react-router";
+import {
+  Form,
+  Outlet,
+  Link,
+  NavLink,
+  useNavigation,
+  Await,
+} from "react-router";
 import type { Route } from "./+types/sidebar";
 import { getContacts } from "~/data";
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
 
-  const contacts = await getContacts(q);
+  const contacts = getContacts(q);
   return { contacts, query: q };
 }
 
 export default function SidebarLayout({ loaderData }: Route.ComponentProps) {
-  const { contacts, query } = loaderData;
+  const { contacts: contactsPromise, query } = loaderData;
 
   const navigation = useNavigation();
 
@@ -37,7 +44,7 @@ export default function SidebarLayout({ loaderData }: Route.ComponentProps) {
               type="search"
               className="p-2 rounded-md shadow-md bg-white"
               ref={searchRef}
-              value={query || ""}
+              defaultValue={query || ""}
             />
           </Form>
 
@@ -50,26 +57,26 @@ export default function SidebarLayout({ loaderData }: Route.ComponentProps) {
         </div>
 
         <nav className="flex-1 overflow-y-auto">
-          <ul className="p-4">
-            {contacts?.length === 0 ? (
-              <p>
-                <i>No contacts</i>
-              </p>
-            ) : (
-              contacts.map((contact) => (
-                <li key={contact.id}>
-                  <NavLink
-                    className={({ isActive, isPending }) => {
-                      return `block w-full px-1 py-2 rounded-md hover:bg-gray-200 ${isActive ? "bg-blue-500" : isPending ? "bg-gray-200" : ""}`;
-                    }}
-                    to={`/contacts/${contact.id}`}
-                  >
-                    {contact.first} {contact.last}
-                  </NavLink>
-                </li>
-              ))
-            )}
-          </ul>
+          <Suspense fallback={<p>Loading contacts...</p>}>
+            <Await
+              resolve={contactsPromise}
+              errorElement={<p>Error loading contacts</p>}
+              children={(contacts) =>
+                contacts.map((contact) => (
+                  <li key={contact.id}>
+                    <NavLink
+                      className={({ isActive, isPending }) => {
+                        return `block w-full px-1 py-2 rounded-md hover:bg-gray-200 ${isActive ? "bg-blue-500" : isPending ? "bg-gray-200" : ""}`;
+                      }}
+                      to={`/contacts/${contact.id}`}
+                    >
+                      {contact.first} {contact.last}
+                    </NavLink>
+                  </li>
+                ))
+              }
+            />
+          </Suspense>
         </nav>
         <h1>
           <Link to="about">About</Link>
