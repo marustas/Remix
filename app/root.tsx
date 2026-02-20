@@ -12,7 +12,7 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import { createEmptyContact } from "./data";
 
-export async function action() {
+export async function action({ request }: Route.ActionArgs) {
   const contact = await createEmptyContact();
 
   return redirect(`/contacts/${contact.id}/edit`);
